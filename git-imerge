@@ -11,21 +11,21 @@
 #
 # This program is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 # General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see
+# along with this program. If not, see
 # <http://www.gnu.org/licenses/>.
 
 r"""Git incremental merge
 
-Perform the merge between two branches incrementally.  If conflicts
+Perform the merge between two branches incrementally. If conflicts
 are encountered, figure out exactly which pairs of commits conflict,
 and present the user with one pairwise conflict at a time for
 resolution.
 
-Multiple incremental merges can be in progress at the same time.  Each
+Multiple incremental merges can be in progress at the same time. Each
 incremental merge has a name, and its progress is recorded in the Git
 repository as references under 'refs/imerge/NAME'.
 
@@ -43,7 +43,7 @@ commands:
     git-imerge start --name=NAME --goal=GOAL --first-parent BRANCH
 
 Then the tool will present conflicts to you one at a time, similar to
-"git rebase --incremental".  Resolve each conflict, and then
+"git rebase --incremental". Resolve each conflict, and then
 
     git add FILE...
     git-imerge continue
@@ -127,7 +127,7 @@ class Failure(Exception):
     def wrap(klass, f):
         """Wrap a function inside a try...except that catches this error.
 
-        If the exception is thrown, call sys.exit().  This function
+        If the exception is thrown, call sys.exit(). This function
         can be used as a decorator."""
 
         @functools.wraps(f)
@@ -529,7 +529,7 @@ def get_boundaries(tip1, tip2):
 
     Given the tips of two branches that should be merged, return
     (merge_base, commits1, commits2) describing the edges of the
-    imerge.  Raise Failure if there are any problems."""
+    imerge. Raise Failure if there are any problems."""
 
     merge_base = compute_best_merge_base(tip1, tip2)
 
@@ -586,8 +586,8 @@ def reparent(commit, parent_sha1s, msg=None):
     """Create a new commit object like commit, but with the specified parents.
 
     commit is the SHA1 of an existing commit and parent_sha1s is a
-    list of SHA1s.  Create a new commit exactly like that one, except
-    that it has the specified parent commits.  Return the SHA1 of the
+    list of SHA1s. Create a new commit exactly like that one, except
+    that it has the specified parent commits. Return the SHA1 of the
     resulting commit object, which is already stored in the object
     database but is not yet referenced by anything.
 
@@ -643,7 +643,7 @@ def automerge(commit1, commit2, msg=None):
     """Attempt an automatic merge of commit1 and commit2.
 
     Return the SHA1 of the resulting commit, or raise
-    AutomaticMergeFailed on error.  This must be called with a clean
+    AutomaticMergeFailed on error. This must be called with a clean
     worktree."""
 
     call_silently(['git', 'checkout', '-f', commit1])
@@ -828,7 +828,7 @@ class MergeFrontier(object):
     """Represents the merge frontier within a Block.
 
     A MergeFrontier is represented by a list of SubBlocks, each of
-    which is thought to be completely mergeable.  The list is kept in
+    which is thought to be completely mergeable. The list is kept in
     normalized form:
 
     * Only non-empty blocks are retained
@@ -848,7 +848,7 @@ class MergeFrontier(object):
         (0,0).
 
         A blocked commit is *not* considered to be within the
-        frontier, even if a merge is registered for it.  Such merges
+        frontier, even if a merge is registered for it. Such merges
         must be explicitly unblocked."""
 
         # FIXME: This algorithm can take combinatorial time, for
@@ -863,14 +863,14 @@ class MergeFrontier(object):
         #
         # The problem is that the algorithm will explore all of the
         # ways of getting to commit *, and the number of paths grows
-        # like a binomial coefficient.  The solution would be to
+        # like a binomial coefficient. The solution would be to
         # remember dead-ends and reject any curves that visit a point
         # to the right of a dead-end.
         #
         # For now we don't intend to allow a situation like this to be
         # created, so we ignore the problem.
 
-        # A list (i1, i2, down) of points in the path so far.  down is
+        # A list (i1, i2, down) of points in the path so far. down is
         # True iff the attempted step following this one was
         # downwards.
         path = []
@@ -937,7 +937,7 @@ class MergeFrontier(object):
         notation):
 
         0. All of the merges in block[1:,0] and block[0,1:] are
-           already known.  (This is an invariant of the Block class.)
+           already known. (This is an invariant of the Block class.)
 
         1. If a direct merge can be done between block[i1-1,0] and
            block[0,i2-1], then all of the pairwise merges in
@@ -954,12 +954,12 @@ class MergeFrontier(object):
 
         Of course these assumptions are not rigorously true, so the
         MergeFrontier returned by this function is only an
-        approximation of the real merge diagram.  We check for and
+        approximation of the real merge diagram. We check for and
         correct such inconsistencies later."""
 
         # Given that these diagrams typically have few blocks, check
         # the end of a range first to see if the whole range can be
-        # determined, and fall back to bisection otherwise.  We
+        # determined, and fall back to bisection otherwise. We
         # determine the frontier block by block, starting in the lower
         # left.
 
@@ -972,7 +972,7 @@ class MergeFrontier(object):
 
         if not block.is_mergeable(1, 1):
             # There are no mergeable blocks in block; therefore,
-            # block[1,1] must itself be unmergeable.  Record that
+            # block[1,1] must itself be unmergeable. Record that
             # fact:
             block[1, 1].record_blocked(True)
             return MergeFrontier(block, [])
@@ -980,7 +980,7 @@ class MergeFrontier(object):
         blocks = []
 
         # At this point, we know that there is at least one mergeable
-        # commit in the first column.  Find the height of the success
+        # commit in the first column. Find the height of the success
         # block in column 1:
         i1 = 1
         i2 = find_first_false(
@@ -1026,7 +1026,7 @@ class MergeFrontier(object):
             #
             # This implies that (i1, i2) is the first unmergeable
             # commit in a blocker block (though blocker blocks are not
-            # recorded explicitly).  It also implies that a mergeable
+            # recorded explicitly). It also implies that a mergeable
             # block has its last mergeable commit somewhere in row
             # i2-1; find its width.
             if (
@@ -1407,8 +1407,8 @@ class MergeFrontier(object):
         """Try pushing out one of the blocks on this frontier.
 
         Raise BlockCompleteError if the whole block has already been
-        solved.  Raise FrontierBlockedError if the frontier is blocked
-        everywhere.  This method does *not* update self; if it returns
+        solved. Raise FrontierBlockedError if the frontier is blocked
+        everywhere. This method does *not* update self; if it returns
         successfully you should recompute the frontier from
         scratch."""
 
@@ -1423,7 +1423,7 @@ class MergeFrontier(object):
             if block.auto_expand_frontier():
                 return
         else:
-            # None of the blocks could be expanded.  Suggest that the
+            # None of the blocks could be expanded. Suggest that the
             # caller do a manual merge of the commit that is blocking
             # the leftmost blocker block.
             i1, i2 = blocks[0].get_original_indexes(1, 1)
@@ -1514,7 +1514,7 @@ class Block(object):
     def convert_original_indexes(self, i1, i2):
         """Return the indexes in this block corresponding to original indexes (i1,i2).
 
-        raise IndexError if they are not within this block.  This
+        raise IndexError if they are not within this block. This
         method does not support negative indices."""
 
         return (i1, i2)
@@ -1537,7 +1537,7 @@ class Block(object):
         """Return the MergeRecord at (i1, i2) (requires two indexes).
 
         If i1 and i2 are integers but the merge is unknown, return
-        None.  If either index is a slice, return a SubBlock."""
+        None. If either index is a slice, return a SubBlock."""
 
         try:
             (i1, i2) = index
@@ -1597,7 +1597,7 @@ class Block(object):
                 merge = automerge(commit1, commit2, msg=logmsg)
                 sys.stderr.write('success.\n')
             except AutomaticMergeFailed as e:
-                sys.stderr.write('unexpected conflict.  Backtracking...\n')
+                sys.stderr.write('unexpected conflict. Backtracking...\n')
                 raise UnexpectedMergeFailure(str(e), i1, i2)
             if record:
                 merges.append((i1, i2, merge))
@@ -1617,7 +1617,7 @@ class Block(object):
         if i1 > 1 and i2 > 1:
             # We will compare two ways of doing the final "vertex" merge:
             # as a continuation of the bottom edge, or as a continuation
-            # of the right edge.  We only accept it if both approaches
+            # of the right edge. We only accept it if both approaches
             # succeed and give identical trees.
             vertex_v1 = do_merge(
                 i1, self[i1, 0].sha1, i2, left,
@@ -1634,12 +1634,12 @@ class Block(object):
                     'The two ways of autofilling %d-%d agree.\n'
                     % self.get_original_indexes(i1, i2)
                     )
-                # Everything is OK.  Now reparent the actual vertex merge to
+                # Everything is OK. Now reparent the actual vertex merge to
                 # have above and left as its parents:
                 merges.append((i1, i2, reparent(vertex_v1, [above, left])))
             else:
                 sys.stderr.write(
-                    'The two ways of autofilling %d-%d do not agree.  Backtracking...\n'
+                    'The two ways of autofilling %d-%d do not agree. Backtracking...\n'
                     % self.get_original_indexes(i1, i2)
                     )
                 raise UnexpectedMergeFailure('Inconsistent vertex merges', i1, i2)
@@ -1909,8 +1909,8 @@ class MergeState(Block):
         """Verify that a MergeState with the given name exists.
 
         Just check for the existence, readability, and compatible
-        version of the 'state' reference.  If the reference doesn't
-        exist, just return False.  If it exists but is unusable for
+        version of the 'state' reference. If the reference doesn't
+        exist, just return False. If it exists but is unusable for
         some other reason, raise an exception."""
 
         try:
@@ -2214,7 +2214,7 @@ class MergeState(Block):
         self.manual = bool(manual)
         self.branch = branch or name
 
-        # A simulated 2D array.  Values are None or MergeRecord instances.
+        # A simulated 2D array. Values are None or MergeRecord instances.
         self._data = [[None] * self.len2 for i1 in range(self.len1)]
 
         self.get_value(0, 0).record_merge(merge_base, source)
@@ -2258,7 +2258,7 @@ class MergeState(Block):
         """Complete the frontier using automerges.
 
         If progress is blocked before the frontier is complete, raise
-        a FrontierBlockedError.  Save the state as progress is
+        a FrontierBlockedError. Save the state as progress is
         made."""
 
         progress_made = False
@@ -2298,7 +2298,7 @@ class MergeState(Block):
     def incorporate_manual_merge(self, commit):
         """Record commit as a manual merge of its parents.
 
-        Return the indexes (i1,i2) where it was recorded.  If the
+        Return the indexes (i1,i2) where it was recorded. If the
         commit is not usable for some reason, raise
         ManualMergeUnusableError."""
 
@@ -2355,7 +2355,7 @@ class MergeState(Block):
             check_call(['git', 'update-ref', refname, commit])
             checkout(refname, quiet=True)
         else:
-            # refname already exists.  This has two ramifications:
+            # refname already exists. This has two ramifications:
             # 1. HEAD might point at it
             # 2. We may only fast-forward it (unless force is set)
             try:
@@ -2586,11 +2586,11 @@ def incorporate_user_merge(merge_state, edit_log_msg=None):
 
     If the scratch reference refs/heads/imerge/NAME exists and is
     checked out, first check if there are staged changes that can be
-    committed.  Then try to incorporate the current commit into
+    committed. Then try to incorporate the current commit into
     merge_state, delete the reference, and return (i1,i2)
-    corresponding to the merge.  If the scratch reference does not
-    exist, raise NoManualMergeError().  If the scratch reference
-    exists but cannot be used, raise a ManualMergeUnusableError.  If
+    corresponding to the merge. If the scratch reference does not
+    exist, raise NoManualMergeError(). If the scratch reference
+    exists but cannot be used, raise a ManualMergeUnusableError. If
     there are unstaged changes in the working tree, emit an error
     message and raise UncleanWorkTreeError."""
 
@@ -2607,9 +2607,9 @@ def incorporate_user_merge(merge_state, edit_log_msg=None):
         raise NoManualMergeError('HEAD is currently detached.')
 
     if head_name != refname:
-        # This should not usually happen.  The scratch reference
-        # exists, but it is not current.  Perhaps the user gave up on
-        # an attempted merge then switched to another branch.  We want
+        # This should not usually happen. The scratch reference
+        # exists, but it is not current. Perhaps the user gave up on
+        # an attempted merge then switched to another branch. We want
         # to delete refname, but only if it doesn't contain any
         # content that we don't already know.
         try:
@@ -2618,12 +2618,12 @@ def incorporate_user_merge(merge_state, edit_log_msg=None):
             # It points to a commit that we don't have in our records.
             raise Failure(
                 'The scratch reference, %(refname)s, already exists but is not\n'
-                'checked out.  If it points to a merge commit that you would like\n'
+                'checked out. If it points to a merge commit that you would like\n'
                 'to use, please check it out using\n'
                 '\n'
                 '    git checkout %(refname)s\n'
                 '\n'
-                'and then try to continue again.  If it points to a commit that is\n'
+                'and then try to continue again. If it points to a commit that is\n'
                 'unneeded, then please delete the reference using\n'
                 '\n'
                 '    git update-ref -d %(refname)s\n'
@@ -2632,7 +2632,7 @@ def incorporate_user_merge(merge_state, edit_log_msg=None):
                 % dict(refname=refname)
                 )
         else:
-            # It points to a commit that is already recorded.  We can
+            # It points to a commit that is already recorded. We can
             # delete it without losing any information.
             check_call([
                 'git', 'update-ref',
@@ -2650,7 +2650,7 @@ def incorporate_user_merge(merge_state, edit_log_msg=None):
                 )
 
     # If we reach this point, then the scratch reference exists and is
-    # checked out.  Now check whether there is staged content that
+    # checked out. Now check whether there is staged content that
     # can be committed:
 
     merge_frontier = MergeFrontier.map_known_frontier(merge_state)
@@ -2715,7 +2715,7 @@ def choose_merge_name(name, default_to_unique=True):
         MergeState.set_default_name(name)
         return name
 
-    # A name was not specified.  Try to use the default name:
+    # A name was not specified. Try to use the default name:
     default_name = MergeState.get_default_name()
     if default_name:
         if MergeState.check_exists(default_name):
@@ -2778,7 +2778,7 @@ def main(args):
             help = (
                 'the name of the branch to which to store the result '
                 '(default is the value provided to "init" or "start" if any; '
-                'otherwise the name of the merge).   '
+                'otherwise the name of the merge). '
                 'If BRANCH already exists then it must be able to be '
                 'fast-forwarded to the result unless the --force option is '
                 'specified.'
@@ -2795,7 +2795,7 @@ def main(args):
             action='store_true', default=False,
             help=(
                 'ask the user to complete all merges manually, even when they '
-                'appear conflict-free.  This option disables the usual bisection '
+                'appear conflict-free. This option disables the usual bisection '
                 'algorithm and causes the full incremental merge diagram to be '
                 'completed.'
                 ),
@@ -2933,7 +2933,7 @@ def main(args):
     subparser = subparsers.add_parser(
         'list',
         help=(
-            'list the names of incremental merges that are currently in progress.  '
+            'list the names of incremental merges that are currently in progress. '
             'The active merge is shown with an asterisk next to it.'
             ),
         )
@@ -3010,7 +3010,7 @@ def main(args):
     # Set an environment variable GIT_IMERGE=1 while we are running.
     # This makes it possible for hook scripts etc. to know that they
     # are being run within git-imerge, and should perhaps behave
-    # differently.  In the future we might make the value more
+    # differently. In the future we might make the value more
     # informative, like GIT_IMERGE=[automerge|autofill|...].
     os.environ[str('GIT_IMERGE')] = str('1')
 
@@ -3121,7 +3121,7 @@ def main(args):
                 options.branch = options.name
             else:
                 parser.error(
-                    'HEAD is not a simple branch.  '
+                    'HEAD is not a simple branch. '
                     'Please specify --branch for storing results.'
                     )
 
@@ -3186,7 +3186,7 @@ def main(args):
                 options.branch = options.name
             else:
                 parser.error(
-                    'HEAD is not a simple branch.  '
+                    'HEAD is not a simple branch. '
                     'Please specify --branch for storing results.'
                     )
 
